@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace ComposerRequireCheckerTest\DefinedExtensionsResolver;
 
 use ComposerRequireChecker\DefinedExtensionsResolver\DefinedExtensionsResolver;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Spatie\TemporaryDirectory\TemporaryDirectory;
 
 use function file_put_contents;
 
-/** @covers \ComposerRequireChecker\DefinedExtensionsResolver\DefinedExtensionsResolver */
+#[CoversClass(DefinedExtensionsResolver::class)]
 final class DefinedExtensionsResolverTest extends TestCase
 {
     private DefinedExtensionsResolver $resolver;

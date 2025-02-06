@@ -5,22 +5,21 @@ declare(strict_types=1);
 namespace ComposerRequireCheckerTest\NodeVisitor;
 
 use ComposerRequireChecker\NodeVisitor\UsedSymbolCollector;
-use PhpParser\Node\Stmt;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeTraverserInterface;
 use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\Parser;
 use PhpParser\ParserFactory;
+use PHPUnit\Framework\Attributes\CoversNothing;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
+use Psl\File;
 use ReflectionClass;
 
 use function array_diff;
-use function file_get_contents;
 
-/**
- * @coversNothing
- * @group functional
- */
+#[CoversNothing]
+#[Group('functional')]
 final class UsedSymbolCollectorFunctionalTest extends TestCase
 {
     private UsedSymbolCollector $collector;
@@ -45,13 +44,14 @@ final class UsedSymbolCollectorFunctionalTest extends TestCase
 
         self::assertSameCollectedSymbols(
             [
+                'PHPUnit\Framework\Attributes\CoversNothing',
+                'PHPUnit\Framework\Attributes\Group',
                 'ComposerRequireChecker\NodeVisitor\UsedSymbolCollector',
                 'PHPUnit\Framework\TestCase',
                 'PhpParser\NodeTraverser',
                 'PhpParser\NodeTraverserInterface',
                 'PhpParser\Parser',
                 'PhpParser\ParserFactory',
-                'file_get_contents',
                 'ReflectionClass',
                 'array_diff',
                 'self',
@@ -59,6 +59,7 @@ final class UsedSymbolCollectorFunctionalTest extends TestCase
                 'string',
                 'array',
                 'void',
+                'Psl\File\read',
             ],
             $this->collector->getCollectedSymbols(),
         );
@@ -168,19 +169,21 @@ final class UsedSymbolCollectorFunctionalTest extends TestCase
         );
     }
 
-    /** @return array<Stmt> */
-    private function traverseStringAST(string $stringAST): array
+    private function traverseStringAST(string $stringAST): void
     {
-        return $this->traverser->traverse($this->parser->parse($stringAST));
+        $parsed = $this->parser->parse($stringAST);
+
+        self::assertNotNull($parsed);
+
+        $this->traverser->traverse($parsed);
     }
 
-    /** @return array<Stmt> */
-    private function traverseClassAST(string $className): array
+    /** @param class-string $className */
+    private function traverseClassAST(string $className): void
     {
-        $fileContent = file_get_contents((new ReflectionClass($className))->getFileName());
-        $this->assertNotFalse($fileContent);
+        $fileContent = File\read((new ReflectionClass($className))->getFileName());
 
-        return $this->traverseStringAST($fileContent);
+        $this->traverseStringAST($fileContent);
     }
 
     /**

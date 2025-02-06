@@ -35,7 +35,8 @@ final class DefinedSymbolCollector extends NodeVisitorAbstract
         return array_keys($this->definedSymbols);
     }
 
-    public function enterNode(Node $node): Node
+    /** {@inheritDoc} */
+    public function enterNode(Node $node)
     {
         $this->recordClassDefinition($node);
         $this->recordEnumDefinition($node);

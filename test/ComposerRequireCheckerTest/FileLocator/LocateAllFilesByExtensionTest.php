@@ -6,6 +6,8 @@ namespace ComposerRequireCheckerTest\FileLocator;
 
 use ArrayObject;
 use ComposerRequireChecker\FileLocator\LocateAllFilesByExtension;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Spatie\TemporaryDirectory\TemporaryDirectory;
 
@@ -17,7 +19,7 @@ use function touch;
 
 use const DIRECTORY_SEPARATOR;
 
-/** @covers \ComposerRequireChecker\FileLocator\LocateAllFilesByExtension */
+#[CoversClass(LocateAllFilesByExtension::class)]
 final class LocateAllFilesByExtensionTest extends TestCase
 {
     private LocateAllFilesByExtension $locator;
@@ -67,7 +69,6 @@ final class LocateAllFilesByExtensionTest extends TestCase
             $fileName = sprintf('MyClass%d.php', $i);
             $filePath = $dir . DIRECTORY_SEPARATOR . $fileName;
             touch($filePath);
-            $files[] = $filePath;
         }
 
         $foundFiles = $this->locate([$dir], '.php', ['MyClass6']);
@@ -96,6 +97,7 @@ final class LocateAllFilesByExtensionTest extends TestCase
      *
      * @dataProvider provideBlacklists
      */
+    #[DataProvider('provideBlacklists')]
     public function testLocateWithBlackList(array $blacklist, array $expectedFiles): void
     {
         file_put_contents($this->path('MyNamespaceA/MyClass.php'), '<?php class MyClass {}');

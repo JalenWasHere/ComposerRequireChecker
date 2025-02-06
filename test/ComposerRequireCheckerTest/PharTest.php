@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace ComposerRequireCheckerTest;
 
 use PHPUnit\Framework\TestCase;
+use Psl\Env;
 
 use function chdir;
 use function dirname;
 use function escapeshellarg;
 use function exec;
-use function getcwd;
 use function implode;
 use function realpath;
 use function sprintf;
@@ -31,17 +31,13 @@ final class PharTest extends TestCase
             $this->markTestSkipped('Compiled PHAR not found');
         }
 
-        $this->oldWorkingDirectory = getcwd();
+        $this->oldWorkingDirectory = Env\current_dir();
         $this->bin                 = PHP_BINARY . ' ' . escapeshellarg($phar);
     }
 
     protected function tearDown(): void
     {
-        if ($this->oldWorkingDirectory === getcwd()) {
-            return;
-        }
-
-        chdir($this->oldWorkingDirectory);
+        Env\set_current_dir($this->oldWorkingDirectory);
     }
 
     public function testVersion(): void
